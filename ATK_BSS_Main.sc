@@ -381,7 +381,6 @@ ATK_BSS_Main {
 
 // =================================================================================
 
-
 /*
 Basic testing:
 
@@ -396,4 +395,3 @@ b.sendMsg("/spatdif/source/0/soundfile", "C:/sounds/first.wav");
 b.sendMsg("/spatdif/info/host", "Trajectory-Editor");
 b.sendMsg("/spatdif/info/author", "Steffen");
 */
-

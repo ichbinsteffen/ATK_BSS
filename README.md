@@ -1,4 +1,4 @@
-# ATK_BSS
+# ATK BSS
 
 ATK BSS stands for Ambisonics Toolkit (ATK) Based Spatialization Server (BSS). 
 The ATK provides SuperCollider with a large library for ambisonics reproduction 
@@ -7,3 +7,16 @@ use ATK with the SpatDIF format for OSC messages.
 This lets a sound spatialization environment that sends SpatDIF compliant OSC messages
 make use of the rendering engine of ATK. 
 
+For further information about ATK, visit:
+https://github.com/ambisonictoolkit/atk-sc3
+
+## SpatDIF 
+
+The Spatial Sound Description Interchange Format (SpatDIF) is a format intended for the use of spatial audio applications. 
+The before mentioned possiblity to transmit data over OSC is only one branch of
+SpatDIFs specifications. In ATK BSS however only OSC data will be received.
+
+...to be continued...
+
+For further information about SpatDIF, visit: 
+http://www.spatdif.org/

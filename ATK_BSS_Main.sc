@@ -5,7 +5,7 @@ University of Music Karlsruhe                 | Hochschule für Musik Karlsruhe
 Institute of Musicology and Music-Informatics | Institut für Musikwissenschaft und Musikinformatik
 */
 
-// =================================================================================
+
 ATK_BSS_Main {
 
 	classvar <>instance;
@@ -96,6 +96,7 @@ ATK_BSS_Main {
 	add_SourceToList
 	{
 		this.sourceObjects.add( ATK_BSS_SourceObject.new() );
+		this.mediaList.add( ATK_BSS_Media.new() );
 		this.update_GUI;
 	}
 
@@ -382,6 +383,8 @@ ATK_BSS_Main {
 
 
 /*
+Basic testing:
+
 ATK_BSS_Main.instance = nil;
 a = ATK_BSS_Main();
 

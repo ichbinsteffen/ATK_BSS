@@ -3,17 +3,6 @@ Date: January 12th 2018                       | 12.01.2018
 Author: Steffen Ebner                         |
 University of Music Karlsruhe                 | Hochschule für Musik Karlsruhe
 Institute of Musicology and Music-Informatics | Institut für Musikwissenschaft und Musikinformatik
-
-ATK_BSS_Main.instance = nil;
-a = ATK_BSS_Main();
-a.add_SourceToList();
-a.sourceObjects[0].set_SoundfilePath("C:/Users/admin/Music/TrajectoryEditor_Audio/mono_glassmarimbachime.wav");
-a.sourceObjects[0].play_Source(0,true);
-a.sourceObjects[0].set_PositionSpherical(1.5707 * 1.0, 0.2 * 1.5707, 1.5707* 1.3);
-a.sourceObjects[0].init_Synth();
-a.sourceObjects[0].pause_Source();
-a.sourceObjects[0].synth.free;
-a.free
 */
 
 // =================================================================================
@@ -83,11 +72,9 @@ ATK_BSS_Main {
 		this.port = 1337;
 		this.sourceObjects = List.new();
 		this.mediaList = List.new();
-		//this.initOSCDefs();
 		this.initOSCResponder();
 		this.prepareServer();
 		this.positionUnit = 0;
-
 	}
 
 // =================================================================================
@@ -102,76 +89,6 @@ ATK_BSS_Main {
 	initATKEncoder
 	{
 		this.atkEncoder = FoaEncoderMatrix.newOmni;
-	}
-
-// =================================================================================
-
-	initOSCDefs
-	{
-		"The function initOSCDefs is now deprecated. It should no longer be called. Use initOSCResponder instead.".postln;
-		/*
-		set_ClientStatus = OSCdef(\clientStatus, { |msg,time,addr,recvPort|
-			{
-				this.clientStatusLabel.string_(msg[1]).stringColor_(Color.green)
-			}.defer;
-		},'/client/status', recvPort:port);
-
-		set_ClientName = OSCdef(\clientName, { |msg,time,addr,recvPort|
-			{
-				this.clientNameLabel.string_(msg[1]);
-				this.update_GUI();
-			}.defer;
-		},'/client/name', recvPort:port);
-
-		set_Path = OSCdef(\setPath, { |msg,time,addr,recvPort|
-			{sourceObjects[msg[1]].set_SoundfilePath(msg[2])}.defer;
-		}, '/source/path', recvPort:port);
-
-		set_Volume = OSCdef(\setSourceVolume, { |msg,time,addr,recvPort|
-			sourceObjects[msg[1]].setVolume(msg[2]);
-		},'/source/volume', recvPort:port);
-
-		play_Source = OSCdef(\playSource, { |msg,time,addr,recvPort|
-			sourceObjects[msg[1]].play_Source(msg[2],msg[3]);
-		},'/source/play', recvPort:port);
-
-		pause_Source = OSCdef(\pauseSource, { |msg,time,addr,recvPort|
-			sourceObjects[msg[1]].pause_Source();
-		},'/source/pause', recvPort:port);
-
-		set_SourceLoop = OSCdef(\loopSource, { |msg,time,addr,recvPort|
-			sourceObjects[msg[1]].set_loop(msg[2]);
-		},'/source/loop', recvPort:port);
-
-		set_SourcePosition = OSCdef(\setSourcePosition, { |msg,time,addr,recvPort|
-			sourceObjects[msg[1]].changePosition(msg[2]);
-		},'/source/position', recvPort:port);
-
-		add_Source = OSCdef(\addSource, { |msg,time,addr,recvPort|
-			{
-				this.add_SourceToList();
-				this.update_GUI();
-			}.defer;
-		},'/addSource', recvPort:port);
-
-		set_SourcePosCartesian = OSCdef(\sourcePositionCART, { |msg,time,addr,recvPort|
-			{
-				sourceObjects[msg[1]].set_PositionXYZ(msg[2],msg[3],msg[4]);
-			}.defer;
-		},'/source/positionCartesian', recvPort:port);
-
-
-		set_SourcePosSpherical = OSCdef(\sourcePositionSPHE, { |msg,time,addr,recvPort|
-			{
-				sourceObjects[msg[1]].set_PositionSpherical(msg[2],msg[3],msg[4]);
-			}.defer;
-		},'/source/positionSpherical', recvPort:port);
-
-		crtlTestSynth = OSCdef(\testSynth, { |msg, time, addr, recvPort |
-				sourceObjects[msg[1]].set_PositionSpherical(msg[2], msg[3], msg[4]);
-				(msg[2].asString + " " + msg[3].asString + " " + msg[4].asString).postln;
-		}, '/testSynth', recvPort:port);
-		*/
 	}
 
 // =================================================================================
@@ -228,8 +145,6 @@ ATK_BSS_Main {
 
 	set_Port
 	{
-		this.freeOSCDefs();
-		this.initOSCDefs();
 		this.port = portTextfield.value.asInteger;
 		("Port has been set to: " + this.port.asString).postln;
 	}
@@ -260,36 +175,14 @@ ATK_BSS_Main {
 		("Server Audio-Rate: " + Server.default.options.sampleRate.asString).postln;
 	}
 
-// =================================================================================
-
-	freeOSCDefs
-	{
-		"Since OSCdefs are not used any more, this function goes unused.".postln;
-		/*
-		set_Path.free;
-		set_Volume.free;
-		play_Source.free;
-		set_SourceLoop.free;
-		set_SourcePosition.free;
-		set_ClientStatus.free;
-		set_ClientName.free;
-		add_Source.free;
-		set_SourcePosCartesian.free;
-		set_SourcePosSpherical.free;
-		testingDef.free;
-		*/
-	}
 
 // =================================================================================
 
 	free
 	{
-		this.freeOSCDefs;
-		//this.atkEncoder.free;
 		this.atkDecoder.free;
 		this.atkDecoderSynth.free;
 		thisProcess.removeOSCRecvFunc(oscReceiverFunc);
-		thisProcess.closeUDPPort(this.port);
 		//sourceObjects.do{|src| src.free;};
 	}
 
@@ -393,7 +286,7 @@ ATK_BSS_Main {
 							none (default)
 							*/
 						}
-						{a[3] == "location"} {this.mediaList[id] = msg[1];}
+						{a[3] == "location"} {this.mediaList[id].location = msg[1];}
 						{a[3] == "channel"} {}
 						{a[3] == "time-offset"} {}
 						{a[3] == "gain"} {};
@@ -489,12 +382,8 @@ ATK_BSS_Main {
 
 
 /*
-
 ATK_BSS_Main.instance = nil;
 a = ATK_BSS_Main();
-a.add_SourceToList();
-a.free
-a.sourceObjects[0].change_PositionSpherical(1.5707* 1.0, 1.5707* 0.0 ,  1.5707* 0.0);
 
 b = NetAddr.new("127.0.0.1", 1337);
 
@@ -503,7 +392,5 @@ b.sendMsg("/spatdif/source/0/position", 3.141, 1.575, 0.654);
 b.sendMsg("/spatdif/source/0/soundfile", "C:/sounds/first.wav");
 b.sendMsg("/spatdif/info/host", "Trajectory-Editor");
 b.sendMsg("/spatdif/info/author", "Steffen");
-
-test
 */
 

@@ -3,19 +3,7 @@ Date: January 12th 2018                       | 12.01.2018
 Author: Steffen Ebner                         |
 University of Music Karlsruhe                 | Hochschule für Musik Karlsruhe
 Institute of Musicology and Music-Informatics | Institut für Musikwissenschaft und Musikinformatik
-
-ATKServer.instance = nil;
-a = ATKServer();
-a.add_SourceToList();
-a.sourceObjects[0].set_SoundfilePath("C:/Users/admin/Music/TrajectoryEditor_Audio/mono_glassmarimbachime.wav");
-a.sourceObjects[0].play_Source(0,true);
-a.sourceObjects[0].set_PositionSpherical(1.5707 * 1.0, 0.2 * 1.5707, 1.5707* 1.3);
-a.sourceObjects[0].init_Synth();
-a.sourceObjects[0].pause_Source();
-a.sourceObjects[1].synth.free;
-a.free
 */
-
 
 ATK_BSS_SourceObject {
 

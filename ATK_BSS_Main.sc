@@ -74,7 +74,7 @@ ATK_BSS_Main {
 		this.mediaList = List.new();
 		this.initOSCResponder();
 		this.prepareServer();
-		this.positionUnit = 0;
+		this.positionUnit = "xyz";
 	}
 
 // =================================================================================
@@ -105,6 +105,13 @@ ATK_BSS_Main {
 	update_GUI
 	{
 		sourceCountLabel.string_(this.sourceObjects.size.asString);
+	}
+// =================================================================================
+
+	more_info
+	{
+		"Coordinate Unit: %".printf(this.positionUnit);
+		// and so on...
 	}
 
 // =================================================================================
@@ -216,6 +223,7 @@ ATK_BSS_Main {
 			Out.ar(out, encoded*0.03);
 		}).add;
 	}
+
 // =================================================================================
 
 	initOSCResponder
@@ -239,36 +247,52 @@ ATK_BSS_Main {
 
 						case
 
-						{a[3] == "soundfile"} {
-							{sourceObjects[id].set_SoundfilePath(msg[1])}.defer;
+						{a[3] == "soundfile"}
+						{
+							{this.sourceObjects[id].set_SoundfilePath(msg[1])}.defer;
 							"changing Soundfile".postln;
 						}
-						{a[3] == "position"} {
-							//sourceObjects[id].set_SourcePosSpherical(msg[1],msg[2],msg[3]);
 
-							if (this.positionUnit == 0)
+						{a[3] == "position"}
+						{
+							if (this.positionUnit == "xyz")
 							{
-								sourceObjects[id].set_PositionCartesian(msg[1],msg[2],msg[3]);
+								this.sourceObjects[id].set_PositionCartesian(msg[1],msg[2],msg[3]);
 							};
+
+							if (this.positionUnit == "aed")
+							{
+								this.sourceObjects[id].set_PositionSpherical(msg[1],msg[2],msg[3]);
+							};
+
 						}
-						{a[3] == "present"} {
-							sourceObjects[id].present(msg[1]);
+
+						{a[3] == "present"}
+						{
+							this.sourceObjects[id].present(msg[1]);
 							"Source presence".postln;
 						}
-						{a[3] == "volume"} {
-							sourceObjects[id].setVolume(msg[1]);
+
+						{a[3] == "volume"}
+						{
+							this.sourceObjects[id].setVolume(msg[1]);
 							"set source volume".postln;
 						}
-						{a[3] == "loop"} {
-							sourceObjects[id].set_loop(msg[1]);
+						{a[3] == "loop"}
+						{
+							this.sourceObjects[id].set_loop(msg[1]);
 							"loop source".postln;
 						}
-						{a[3] == "play"} {
-							sourceObjects[id].play_Source(msg[1]);
+
+						{a[3] == "play"}
+						{
+							this.sourceObjects[id].play_Source(msg[1]);
 							"playing source".postln;
 						}
-						{a[3] == "pause"} {
-							sourceObjects[id].pause_Source(msg[1]);
+
+						{a[3] == "pause"}
+						{
+							this.sourceObjects[id].pause_Source(msg[1]);
 							"Pausing source".postln;
 						};
 					};
@@ -279,18 +303,12 @@ ATK_BSS_Main {
 					{
 						var id = a[2].asInteger;
 
-						case {a[3] == "type"} {
-							/*
-							stream
-							file
-							live
-							none (default)
-							*/
-						}
+						case
+						{a[3] == "type"} { this.mediaList[id].type = msg[1];}
 						{a[3] == "location"} {this.mediaList[id].location = msg[1];}
-						{a[3] == "channel"} {}
-						{a[3] == "time-offset"} {}
-						{a[3] == "gain"} {};
+						{a[3] == "channel"} {this.mediaList[id].channel = msg[1];}
+						{a[3] == "time-offset"} {this.mediaList[id].timeOffset = msg[1];}
+						{a[3] == "gain"} {this.mediaList[id].gain = msg[1];};
 					};
 
 					// ==================================
@@ -301,12 +319,6 @@ ATK_BSS_Main {
 
 						case {a[3] == "type"}
 						{
-							/*
-							stream
-							file
-							live
-							none (default)
-							*/
 							this.mediaList[id] = msg[1];
 						}
 
@@ -340,7 +352,7 @@ ATK_BSS_Main {
 
 					if(a[1] == "scene") // Entity: scene
 					{
-						if(a[2] == "addSource")
+						if(a[2] == "add-source")
 						{
 							{
 								this.add_SourceToList();
@@ -355,10 +367,10 @@ ATK_BSS_Main {
 					{
 						if(a[2] == "position-unit")
 						{
-							if( (msg[1] == 0 || msg[1] == 1 || msg[1] == 2),
+							if( (msg[1] == "xyz" || msg[1] == "aed" || msg[1] == "openGL"),
 							{
 								this.positionUnit = msg[1];
-								if (msg[1]==2) {"WARNING: Unit 2 (openGL) not supported yet!".postln;};
+								if (msg[1]=="openGL") {"WARNING: Unit 2 (openGL) not supported yet!".postln;};
 							},
 							{"Position unit invalid. You can choose between: 0 (Cartesian), 1 (Spherical) and 3 (openGL)".postln;};
 							);

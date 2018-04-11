@@ -291,12 +291,12 @@ ATK_BSS_Main {
 
 								{a[3] == "associate-media"}
 								{
-									if (mediaDictionary[msg[1].asSymbol] == nil,
+									if (mediaDictionary[msg[1]] == nil,
 										{
 											"Media ID: % - Not found. Association aborted.".postf(msg[1]);
 										},
 										{
-											addressed_so.set_media(mediaDictionary[msg[1].asSymbol]);
+											addressed_so.set_media(mediaDictionary[msg[1]]);
 										}
 									);
 								}
@@ -384,7 +384,18 @@ ATK_BSS_Main {
 								this.update_GUI();
 							}.defer;
 						}
-						{a[2] == "hoststatus"} {"[Info] Host: % - Status: %".postf(msg[1], msg[2]);};
+						{a[2] == "host-status"} {"[Info] Host: % - Status: %".postf(msg[1], msg[2]);}
+						{a[2] == "client-status"}
+						{
+							if (msg[1] == \true, {
+								{this.clientStatusLabel.string_("ONLINE").stringColor_(Color.green);}.defer;
+							});
+
+							if (msg[1] == \false, {
+								{this.clientStatusLabel.string_("OFFLINE").stringColor_(Color.red);}.defer;
+							});
+
+						};
 					};
 
 					// ==================================
@@ -452,9 +463,11 @@ b.sendMsg("/spatdif/scene/add-media", "Media001");
 b.sendMsg("/spatdif/media/Media001/location", "C:/sounds/mono_glassmarimbachime.wav");
 
 b.sendMsg("/spatdif/source/Sound001/associate-media", "Media001");
+a.mediaDictionary["Media001".asSymbol].location
 
 b.sendMsg("/spatdif/source/Sound001/position", 3.141, 1.575, 0.654);
 
-b.sendMsg("/spatdif/info/host", "Trajectory-Editor");
+b.sendMsg("/spatdif/info/host", "3D-HASE");
+b.sendMsg("/spatdif/info/client-status", "true");
 b.sendMsg("/spatdif/info/author", "Steffen");
 */

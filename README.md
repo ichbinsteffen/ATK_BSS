@@ -7,7 +7,7 @@ use ATK with the SpatDIF format for OSC messages.
 This lets a sound spatialization environment that sends SpatDIF compliant OSC messages
 make use of the rendering engine of ATK. 
 
-![alt text](https://github.com/ichbinsteffen/tree/master/misc/images/window.PNG "A screenshot of the ATK_BSS window.")
+![Screenshot](/misc/images/window.PNG "A screenshot of the ATK_BSS window.")
 
 For further information about ATK, visit:
 https://github.com/ambisonictoolkit/atk-sc3
@@ -18,19 +18,11 @@ The Spatial Sound Description Interchange Format (SpatDIF) is a format intended 
 The before mentioned possiblity to transmit data over OSC is only one branch of
 SpatDIFs specifications. In ATK BSS however only OSC data will be received.
 
+SpatDIF sceme:
 
-At the current state of ATK BSS, IDs are considered to be numeric and will be interpreted as such in the OSC path.
-Following statements:
+    /spatdif/source/<id>/position   (msg: [3.141, 1.575, 0])
+    /spatdif/media/<id>/location    (msg: "C:/sounds/birds.wav")
 
-    /spatdif/source/<id>/position
-    /spatdif/media/<id>/location
-
-would only work in this manner:
-
-    /spatdif/source/0/position 
-    /spatdif/source/13/location
-  
-The housekeeping of the appropriate association between source objects and media is thereby easier and more efficient to achieve.
 
 ...to be continued...
 

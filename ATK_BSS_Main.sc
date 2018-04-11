@@ -428,9 +428,9 @@ ATK_BSS_Main {
 							var str = msg[1].asString;
 							if( ((str == "xyz") || (str == "aed") || (str == "openGL")) ,
 							{
-								this.positionUnit = msg[1];
+								this.positionUnit = str;
 								"Position unit set to: % \n".postf(msg[1]);
-								if (msg[1]=="openGL", {"WARNING: Unit 2 (openGL) not supported yet!\n".postln;});
+								if (msg[1]=="openGL", {"WARNING: openGL not supported yet!\n".postln;});
 							},
 							{
 									"Position unit % invalid. Choose between: xyz (Cartesian), aed (Spherical) and openGL\n".postf(msg[1]);};

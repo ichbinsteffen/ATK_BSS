@@ -11,7 +11,9 @@ ATK_BSS_Main {
 	classvar <>instance;
 
 	var <>audioRate;
-	var <>sourceObjects;
+	//var <>sourceObjects;
+	var <>sourceDictionary;
+	var <>mediaDictionary;
 	var <>mediaList;
 	var <>atkDecoder, <>atkEncoder, <>atkDecoderSynth;
 	var <>mix, <>bus;
@@ -70,8 +72,12 @@ ATK_BSS_Main {
 	init
 	{
 		this.port = 1337;
-		this.sourceObjects = List.new();
-		this.mediaList = List.new();
+		//this.sourceObjects = List.new();
+		//this.mediaList = List.new();
+
+		this.sourceDictionary = Dictionary.new();
+		this.mediaDictionary = Dictionary.new();
+
 		this.initOSCResponder();
 		this.prepareServer();
 		this.positionUnit = "xyz";
@@ -93,24 +99,54 @@ ATK_BSS_Main {
 
 // =================================================================================
 
+/*
 	add_SourceToList
 	{
 		this.sourceObjects.add( ATK_BSS_SourceObject.new() );
-		this.mediaList.add( ATK_BSS_Media.new() );
+		this.mediaList.add( ATK_BSS_Media.new());
 		this.update_GUI;
+	}
+*/
+
+	add_SourceToDictionary
+	{
+		| id |
+		if (sourceDictionary[id.asSymbol] == nil,
+			{
+				this.sourceDictionary.put(id, ATK_BSS_SourceObject.new());
+				this.update_GUI;
+			},
+			{
+				"The Source id % already exists. Creation aborted.".postf(id);
+		});
+	}
+
+// =================================================================================
+
+	add_MediaToDictionary
+	{
+		| id |
+		if (mediaDictionary[id.asSymbol] == nil,
+			{
+				this.mediaDictionary.put(id, ATK_BSS_Media.new());
+			},
+			{
+				"The Media id % already exists. Creation aborted.".postf(id);
+			}
+		);
 	}
 
 // =================================================================================
 
 	update_GUI
 	{
-		sourceCountLabel.string_(this.sourceObjects.size.asString);
+		sourceCountLabel.string_(this.sourceDictionary.size.asString);
 	}
 // =================================================================================
 
 	more_info
 	{
-		"Coordinate Unit: %".printf(this.positionUnit);
+		"Coordinate Unit: %".postf(this.positionUnit);
 		// and so on...
 	}
 
@@ -129,7 +165,7 @@ ATK_BSS_Main {
 		clientStatusLabel = QStaticText(window, Rect(80,40,150,20)).string_("Offline").stringColor_(Color.grey);
 
 		QStaticText(window, Rect(10,70,150,20)).string_("Number of Sources: ");
-		sourceCountLabel = QStaticText(window, Rect(140,70,150,20)).string_(sourceObjects.size.asString);
+		sourceCountLabel = QStaticText(window, Rect(140,70,150,20)).string_(sourceDictionary.size.asString);
 
 		QStaticText(window, Rect(220,10,50,20)).string_("Port: ");
 		portTextfield = QTextField(window, Rect(320,10,44,20)).string_("1337");
@@ -243,72 +279,77 @@ ATK_BSS_Main {
 
 					if(a[1] == "source") // Entity: source
 					{
-						var id = a[2].asInteger; // the ID / Name of the source
+						// This is not SpatDIF compliant:
 
-						case
+						// var id = a[2].asInteger; // the ID / Name of the source
 
-						{a[3] == "soundfile"}
-						{
-							{this.sourceObjects[id].set_SoundfilePath(msg[1])}.defer;
-							"changing Soundfile".postln;
-						}
+						// the old code that was based on Integer IDs was replaced by this Dictionary lookup approach:
 
-						{a[3] == "position"}
-						{
-							if (this.positionUnit == "xyz")
+						var addressed_so = nil;
+
+						if(sourceDictionary[a[2].asSymbol] == nil,
 							{
-								this.sourceObjects[id].set_PositionCartesian(msg[1],msg[2],msg[3]);
-							};
-
-							if (this.positionUnit == "aed")
+								"Source Object % not found".postf(a[2]);
+							},
 							{
-								this.sourceObjects[id].set_PositionSpherical(msg[1],msg[2],msg[3]);
-							};
+								addressed_so = sourceDictionary[a[2].asSymbol];
 
-						}
+								case
 
-						{a[3] == "present"}
-						{
-							this.sourceObjects[id].present(msg[1]);
-							"Source presence".postln;
-						}
+								{a[3] == "associate-media"}
+								{
+									if (mediaDictionary[msg[1].asSymbol] == nil,
+										{
+											"Media ID: % - Not found. Association aborted.".postf(msg[1]);
+										},
+										{
+											addressed_so.set_media(mediaDictionary[msg[1]]);
+										}
+									);
+								}
 
-						{a[3] == "volume"}
-						{
-							this.sourceObjects[id].setVolume(msg[1]);
-							"set source volume".postln;
-						}
-						{a[3] == "loop"}
-						{
-							this.sourceObjects[id].set_loop(msg[1]);
-							"loop source".postln;
-						}
+								{a[3] == "position"}
+								{
+									if (this.positionUnit == "xyz")
+									{
+										addressed_so.set_PositionCartesian(msg[1],msg[2],msg[3]);
+									};
 
-						{a[3] == "play"}
-						{
-							this.sourceObjects[id].play_Source(msg[1]);
-							"playing source".postln;
-						}
+									if (this.positionUnit == "aed")
+									{
+										addressed_so.set_PositionSpherical(msg[1],msg[2],msg[3]);
+									};
+								}
 
-						{a[3] == "pause"}
-						{
-							this.sourceObjects[id].pause_Source(msg[1]);
-							"Pausing source".postln;
-						};
-					};
+								{a[3] == "present"} {addressed_so.present = msg[1];}
+								{a[3] == "volume"}  {addressed_so.volume = msg[1];}
+								{a[3] == "play"}    {addressed_so.play_Source(msg[1], msg[2])}
+								{a[3] == "loop"}    {addressed_so.loop = msg[1];}
+								{a[3] == "media"}   {addressed_so.set_SoundfilePath(msg[1]);};
+							}
+						);
+					}; // end of source
+
 
 					// ==================================
 
 					if(a[1] == "media") // Entity: Media
 					{
-						var id = a[2].asInteger;
+						if(this.mediaDictionary[a[2].asSymbol] == nil,
+							{
+								"Media Object % not found".postf(a[2]);
+							},
+							{
+								var adressed_m = this.mediaDictionary[a[2].asSymbol];
 
-						case
-						{a[3] == "type"} { this.mediaList[id].type = msg[1];}
-						{a[3] == "location"} {this.mediaList[id].location = msg[1];}
-						{a[3] == "channel"} {this.mediaList[id].channel = msg[1];}
-						{a[3] == "time-offset"} {this.mediaList[id].timeOffset = msg[1];}
-						{a[3] == "gain"} {this.mediaList[id].gain = msg[1];};
+								case
+								{a[3] == "type"}        {adressed_m.type = msg[1];}
+								{a[3] == "location"}    {adressed_m.location = msg[1];}
+								{a[3] == "channel"}     {adressed_m.channel = msg[1];}
+								{a[3] == "time-offset"} {adressed_m.timeOffset = msg[1];}
+								{a[3] == "gain"}        {adressed_m.gain = msg[1];};
+							}
+						);
 					};
 
 					// ==================================
@@ -355,10 +396,16 @@ ATK_BSS_Main {
 						if(a[2] == "add-source")
 						{
 							{
-								this.add_SourceToList();
-								this.update_GUI();
+								this.add_SourceToDictionary(msg[1]);
+								// this.add_SourceToList(); // Deprecated
 							}.defer;
 						};
+
+						if(a[2] == "add-media")
+						{
+							this.add_MediaToDictionary(msg[1]);
+						};
+
 					};
 
 					// ==================================
@@ -372,7 +419,8 @@ ATK_BSS_Main {
 								this.positionUnit = msg[1];
 								if (msg[1]=="openGL") {"WARNING: Unit 2 (openGL) not supported yet!".postln;};
 							},
-							{"Position unit invalid. You can choose between: 0 (Cartesian), 1 (Spherical) and 3 (openGL)".postln;};
+							{
+									"Position unit invalid. Choose between: xyz (Cartesian), aed (Spherical) and openGL".postln;};
 							);
 						}
 					};
@@ -401,9 +449,14 @@ a = ATK_BSS_Main();
 
 b = NetAddr.new("127.0.0.1", 1337);
 
-b.sendMsg("/spatdif/scene/addSource", "true");
-b.sendMsg("/spatdif/source/0/position", 3.141, 1.575, 0.654);
-b.sendMsg("/spatdif/source/0/soundfile", "C:/sounds/first.wav");
+b.sendMsg("/spatdif/scene/add-source", "UniqueName001");
+b.sendMsg("/spatdif/scene/add-media", "UniqueName001");
+b.sendMsg("/spatdif/media/UniqueName001/location", "C:/sounds/mono_glassmarimbachime.wav");
+
+b.sendMsg("/spatdif/source/UniqueName001/associate-media", "UniqueName001");
+
+b.sendMsg("/spatdif/source/UniqueName001/position", 3.141, 1.575, 0.654);
+
 b.sendMsg("/spatdif/info/host", "Trajectory-Editor");
 b.sendMsg("/spatdif/info/author", "Steffen");
 */

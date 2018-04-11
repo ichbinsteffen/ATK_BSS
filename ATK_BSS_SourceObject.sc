@@ -12,6 +12,8 @@ ATK_BSS_SourceObject {
 	var <>posCartesian, <>mute, <>volume, <>loop, <>currentStartFrame;
 	var <>atkEncoderMatrix, <>atkEncoder;
 	var <>synthDef, <>synth, <>out;
+	var <>associated_media;
+	var <>present;
 
 	classvar currentID;
 	classvar sampleRate;
@@ -72,11 +74,22 @@ ATK_BSS_SourceObject {
 
 // =================================================================================
 
-	set_SoundfilePath
+	set_SoundfilePath //////// DEPRECATED
 	{
 		| sndPath |
 
 		this.sndFilePath = sndPath;
+		this.sndFilePath.postln;
+		this.update_Buffer();
+	}
+
+	// USE set_media INSTEAD:
+	set_media
+	{
+		| mediaObject |
+
+		this.associated_media = mediaObject;
+		this.sndFilePath = associated_media.location;
 		this.sndFilePath.postln;
 		this.update_Buffer();
 	}

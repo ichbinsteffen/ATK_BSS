@@ -25,7 +25,8 @@ SpatDIFs specifications. In ATK BSS however only OSC data will be received.
 
 
 ### Example messages:
-
+    OSC-Address                               OSC-Message (content)
+    
     /spatdif/scene/add-source                 (msg: "Sound001")
     /spatdif/scene/add-media                  (msg: "Media001")
     /spatdif/media/Media001/location          (msg: "C:/sounds/birds.wav")

@@ -11,7 +11,6 @@ ATK_BSS_Main {
 	classvar <>instance;
 
 	var <>audioRate;
-	//var <>sourceObjects;
 	var <>sourceDictionary;
 	var <>mediaDictionary;
 	var <>mediaList;
@@ -72,8 +71,6 @@ ATK_BSS_Main {
 	init
 	{
 		this.port = 1337;
-		//this.sourceObjects = List.new();
-		//this.mediaList = List.new();
 
 		this.sourceDictionary = Dictionary.new();
 		this.mediaDictionary = Dictionary.new();
@@ -98,15 +95,6 @@ ATK_BSS_Main {
 	}
 
 // =================================================================================
-
-/*
-	add_SourceToList
-	{
-		this.sourceObjects.add( ATK_BSS_SourceObject.new() );
-		this.mediaList.add( ATK_BSS_Media.new());
-		this.update_GUI;
-	}
-*/
 
 	add_SourceToDictionary
 	{
@@ -227,7 +215,6 @@ ATK_BSS_Main {
 		this.atkDecoder.free;
 		this.atkDecoderSynth.free;
 		thisProcess.removeOSCRecvFunc(oscReceiverFunc);
-		//sourceObjects.do{|src| src.free;};
 	}
 
 // =================================================================================
@@ -237,27 +224,37 @@ ATK_BSS_Main {
 	add_SynthDefs
 	{
 		SynthDef(\atkSource,
-			{ | out, rho, theta, phi, vol, mute, loop, sndBuffer, currentStartFrame |
-			var signal = PlayBuf.ar(1, sndBuffer, 1, 1, currentStartFrame, loop, 2);
-			var encoded = FoaEncode.ar(signal, this.atkEncoder);
-			// encoded = FoaTransform.ar(encoded, 'pushX', posX);
-			// encoded = FoaTransform.ar(encoded, 'pushY', posY);
-			// encoded = FoaTransform.ar(encoded, 'pushZ', posZ);
-			encoded = FoaTransform.ar(encoded, 'push', rho, theta, phi);
-			Out.ar(out, encoded*vol);
-		}).add;
+			{
+				| out, rho, theta, phi, vol, mute, loop, sndBuffer, currentStartFrame |
 
-		SynthDef(\atkDecode, { |out, in|
-			Out.ar(out, FoaDecode.ar(In.ar(in, 4), this.atkDecoder));
-		}).add;
+				var signal = PlayBuf.ar(1, sndBuffer, 1, 1, currentStartFrame, loop, 2);
+				var encoded = FoaEncode.ar(signal, this.atkEncoder);
+				// encoded = FoaTransform.ar(encoded, 'pushX', posX);
+				// encoded = FoaTransform.ar(encoded, 'pushY', posY);
+				// encoded = FoaTransform.ar(encoded, 'pushZ', posZ);
+				encoded = FoaTransform.ar(encoded, 'push', rho, theta, phi);
+				Out.ar(out, encoded*vol);
+			}
+		).add;
+
+		SynthDef(\atkDecode,
+			{
+				| out, in |
+
+				Out.ar(out, FoaDecode.ar(In.ar(in, 4), this.atkDecoder));
+			}
+		).add;
 
 		SynthDef(\myTestSynth,
-			{ | out, rho, theta, phi |
-			var signal = Decay.ar(Impulse.ar(1.7), 0.1) * WhiteNoise.ar;
-			var encoded = FoaEncode.ar(signal, this.atkEncoder);
-			encoded = FoaTransform.ar(encoded, 'push', rho, theta, phi);
-			Out.ar(out, encoded*0.03);
-		}).add;
+			{
+				| out, rho, theta, phi |
+
+				var signal = Decay.ar(Impulse.ar(1.7), 0.1) * WhiteNoise.ar;
+				var encoded = FoaEncode.ar(signal, this.atkEncoder);
+				encoded = FoaTransform.ar(encoded, 'push', rho, theta, phi);
+				Out.ar(out, encoded*0.03);
+			}
+		).add;
 	}
 
 // =================================================================================
@@ -266,7 +263,9 @@ ATK_BSS_Main {
 	{
 		thisProcess.openUDPPort(this.port);
 
-		oscReceiverFunc = { |msg, time, addr|
+		oscReceiverFunc = {
+
+			| msg, time, addr |
 
 			if(msg[0] != '/status.reply')
 			{
@@ -279,12 +278,6 @@ ATK_BSS_Main {
 
 					if(a[1] == "source") // Entity: source
 					{
-						// This is not SpatDIF compliant:
-
-						// var id = a[2].asInteger; // the ID / Name of the source
-
-						// the old code that was based on Integer IDs was replaced by this Dictionary lookup approach:
-
 						var addressed_so = nil;
 
 						if(sourceDictionary[a[2].asSymbol] == nil,
@@ -303,7 +296,7 @@ ATK_BSS_Main {
 											"Media ID: % - Not found. Association aborted.".postf(msg[1]);
 										},
 										{
-											addressed_so.set_media(mediaDictionary[msg[1]]);
+											addressed_so.set_media(mediaDictionary[msg[1].asSymbol]);
 										}
 									);
 								}
@@ -328,7 +321,7 @@ ATK_BSS_Main {
 								{a[3] == "media"}   {addressed_so.set_SoundfilePath(msg[1]);};
 							}
 						);
-					}; // end of source
+					}; // end of source entity
 
 
 					// ==================================
@@ -356,11 +349,15 @@ ATK_BSS_Main {
 
 					if(a[1] == "loop") // Entity: Loop
 					{
+
+						"Loop handling not defied yet.".postln;
+
+						/*
 						var id = a[2].asInteger;
 
 						case {a[3] == "type"}
 						{
-							this.mediaList[id] = msg[1];
+							this.mediaDictionary[id] = msg[1];
 						}
 
 						{a[3] == "location"}
@@ -371,6 +368,7 @@ ATK_BSS_Main {
 						{a[3] == "channel"} {"Not implemented yet.".postln;}
 						{a[3] == "time-offset"} {"Not implemented yet.".postln;}
 						{a[3] == "gain"} {"Not implemented yet.".postln;};
+						*/
 					};
 
 					// ==================================
@@ -393,7 +391,7 @@ ATK_BSS_Main {
 
 					if(a[1] == "scene") // Entity: scene
 					{
-						if(a[2] == "add-source")
+						if(a[2] == "add-source") // Descriptor: add-source
 						{
 							{
 								this.add_SourceToDictionary(msg[1]);
@@ -412,7 +410,7 @@ ATK_BSS_Main {
 
 					if(a[1] == "settings") // Entity: Settings
 					{
-						if(a[2] == "position-unit")
+						if(a[2] == "position-unit") // Descriptor: position-unit
 						{
 							if( (msg[1] == "xyz" || msg[1] == "aed" || msg[1] == "openGL"),
 							{
@@ -449,13 +447,13 @@ a = ATK_BSS_Main();
 
 b = NetAddr.new("127.0.0.1", 1337);
 
-b.sendMsg("/spatdif/scene/add-source", "UniqueName001");
-b.sendMsg("/spatdif/scene/add-media", "UniqueName001");
-b.sendMsg("/spatdif/media/UniqueName001/location", "C:/sounds/mono_glassmarimbachime.wav");
+b.sendMsg("/spatdif/scene/add-source", "Sound001");
+b.sendMsg("/spatdif/scene/add-media", "Media001");
+b.sendMsg("/spatdif/media/Media001/location", "C:/sounds/mono_glassmarimbachime.wav");
 
-b.sendMsg("/spatdif/source/UniqueName001/associate-media", "UniqueName001");
+b.sendMsg("/spatdif/source/Sound001/associate-media", "Media001");
 
-b.sendMsg("/spatdif/source/UniqueName001/position", 3.141, 1.575, 0.654);
+b.sendMsg("/spatdif/source/Sound001/position", 3.141, 1.575, 0.654);
 
 b.sendMsg("/spatdif/info/host", "Trajectory-Editor");
 b.sendMsg("/spatdif/info/author", "Steffen");

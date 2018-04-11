@@ -101,11 +101,11 @@ ATK_BSS_Main {
 		| id |
 		if (sourceDictionary[id.asSymbol] == nil,
 			{
-				this.sourceDictionary.put(id, ATK_BSS_SourceObject.new());
+				this.sourceDictionary.put(id.asSymbol, ATK_BSS_SourceObject.new());
 				this.update_GUI;
 			},
 			{
-				"The Source id % already exists. Creation aborted.".postf(id);
+				"The Source id % already exists. Creation aborted.\n".postf(id);
 		});
 	}
 
@@ -116,10 +116,10 @@ ATK_BSS_Main {
 		| id |
 		if (mediaDictionary[id.asSymbol] == nil,
 			{
-				this.mediaDictionary.put(id, ATK_BSS_Media.new());
+				this.mediaDictionary.put(id.asSymbol, ATK_BSS_Media.new());
 			},
 			{
-				"The Media id % already exists. Creation aborted.".postf(id);
+				"The Media id % already exists. Creation aborted.\n".postf(id);
 			}
 		);
 	}
@@ -282,7 +282,7 @@ ATK_BSS_Main {
 
 						if(sourceDictionary[a[2].asSymbol] == nil,
 							{
-								"Source Object % not found".postf(a[2]);
+								"Source Object % not found.\n".postf(a[2]);
 							},
 							{
 								addressed_so = sourceDictionary[a[2].asSymbol];
@@ -293,7 +293,7 @@ ATK_BSS_Main {
 								{
 									if (mediaDictionary[msg[1]] == nil,
 										{
-											"Media ID: % - Not found. Association aborted.".postf(msg[1]);
+											"Media ID: % - Not found. Association aborted.\n".postf(msg[1]);
 										},
 										{
 											addressed_so.set_media(mediaDictionary[msg[1]]);
@@ -306,11 +306,13 @@ ATK_BSS_Main {
 									if (this.positionUnit == "xyz")
 									{
 										addressed_so.set_PositionCartesian(msg[1],msg[2],msg[3]);
+										"% % % % \n".postf(addr, msg[1],msg[2],msg[3]);
 									};
 
 									if (this.positionUnit == "aed")
 									{
 										addressed_so.set_PositionSpherical(msg[1],msg[2],msg[3]);
+										"% % % % \n".postf(addr, msg[1],msg[2],msg[3]);
 									};
 								}
 
@@ -376,7 +378,7 @@ ATK_BSS_Main {
 					if(a[1] == "info") // Entity: info
 					{
 						case
-						{a[2] == "author"} {"[Info] Author: %".postf(msg[1]);}
+						{a[2] == "author"} {"[Info] Author: %\n".postf(msg[1]);}
 						{a[2] == "host"}
 						{
 							{
@@ -384,14 +386,14 @@ ATK_BSS_Main {
 								this.update_GUI();
 							}.defer;
 						}
-						{a[2] == "host-status"} {"[Info] Host: % - Status: %".postf(msg[1], msg[2]);}
+						{a[2] == "host-status"} {"[Info] Host: % - Status: %\n".postf(msg[1], msg[2]);}
 						{a[2] == "client-status"}
 						{
-							if (msg[1] == \true, {
+							if (msg[1] == "true", {
 								{this.clientStatusLabel.string_("ONLINE").stringColor_(Color.green);}.defer;
 							});
 
-							if (msg[1] == \false, {
+							if (msg[1] == "false", {
 								{this.clientStatusLabel.string_("OFFLINE").stringColor_(Color.red);}.defer;
 							});
 
@@ -423,13 +425,15 @@ ATK_BSS_Main {
 					{
 						if(a[2] == "position-unit") // Descriptor: position-unit
 						{
-							if( (msg[1] == "xyz" || msg[1] == "aed" || msg[1] == "openGL"),
+							var str = msg[1].asString;
+							if( ((str == "xyz") || (str == "aed") || (str == "openGL")) ,
 							{
 								this.positionUnit = msg[1];
-								if (msg[1]=="openGL") {"WARNING: Unit 2 (openGL) not supported yet!".postln;};
+								"Position unit set to: % \n".postf(msg[1]);
+								if (msg[1]=="openGL", {"WARNING: Unit 2 (openGL) not supported yet!\n".postln;});
 							},
 							{
-									"Position unit invalid. Choose between: xyz (Cartesian), aed (Spherical) and openGL".postln;};
+									"Position unit % invalid. Choose between: xyz (Cartesian), aed (Spherical) and openGL\n".postf(msg[1]);};
 							);
 						}
 					};
@@ -461,6 +465,9 @@ b = NetAddr.new("127.0.0.1", 1337);
 b.sendMsg("/spatdif/scene/add-source", "Sound001");
 b.sendMsg("/spatdif/scene/add-media", "Media001");
 b.sendMsg("/spatdif/media/Media001/location", "C:/sounds/mono_glassmarimbachime.wav");
+
+b.sendMsg("/spatdif/source/Sound001/media", "C:/sounds/mono_glassmarimbachime.wav");
+a.sourceDictionary["Sound001".asSymbol].sndFilePath
 
 b.sendMsg("/spatdif/source/Sound001/associate-media", "Media001");
 a.mediaDictionary["Media001".asSymbol].location

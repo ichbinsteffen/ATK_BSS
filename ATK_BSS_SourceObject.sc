@@ -43,8 +43,8 @@ ATK_BSS_SourceObject {
 		this.currentStartFrame = 0;
 		this.loop = 0;
 		this.volume = 0.8;
-		//this.init_Synth();
-		this.play_TEST_SYNTH(0.0,0.3,1.0);
+		this.init_Synth();
+		//this.play_TEST_SYNTH(0.0,0.3,1.0);
 	}
 
 // =================================================================================
@@ -168,7 +168,7 @@ ATK_BSS_SourceObject {
 	{
 		this.synth = Synth.newPaused(\atkSource,
 			[
-				\out, ATK_BSS.instance.bus,
+				\out, ATK_BSS_Main.instance.bus,
 				\sndBuffer, this.sndBuffer,
 				\vol, this.volume,
 				\currentStartFrame, this.currentStartFrame

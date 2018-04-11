@@ -16,6 +16,20 @@ The Spatial Sound Description Interchange Format (SpatDIF) is a format intended 
 The before mentioned possiblity to transmit data over OSC is only one branch of
 SpatDIFs specifications. In ATK BSS however only OSC data will be received.
 
+
+At the current state of ATK BSS, IDs are considered to be numeric and will be interpreted as such in the OSC path.
+Following statements:
+
+  /spatdif/source/<id>/position
+  /spatdif/media/<id>/location
+
+would only work in this manner:
+
+  /spatdif/source/0/position 
+  /spatdif/source/13/location
+  
+The housekeeping of the appropriate association between source objects and media is thereby easier and more efficient to achieve.
+
 ...to be continued...
 
 For further information about SpatDIF, visit: 

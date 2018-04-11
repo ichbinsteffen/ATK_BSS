@@ -20,20 +20,20 @@ SpatDIFs specifications. In ATK BSS however only OSC data will be received.
 
 ### SpatDIF sceme:
 
-    /spatdif/source/<id>/position   (msg: [3.141, 1.575, 0])
-    /spatdif/media/<id>/location    (msg: "C:/sounds/birds.wav")
+    /spatdif/source/<id>/position             (msg: [3.141, 1.575, 0])
+    /spatdif/media/<id>/location              (msg: "C:/sounds/birds.wav")
 
 
 ### Example messages:
 
-    /spatdif/scene/add-source (msg: "Sound001")
-    /spatdif/scene/add-media (msg: "Media001")
-    /spatdif/media/Media001/location (msg: "C:/sounds/birds.wav")
-    /spatdif/source/Sound001/associate-media (msg: "Media001")
-    /spatdif/source/Sound001/position (msg: 3.141, 1.575, 0.654)
-    /spatdif/info/host  (msg: "3D-HASE")
-    /spatdif/info/client-status (msg: "true")
-    /spatdif/info/author (msg: "Steffen")
+    /spatdif/scene/add-source                 (msg: "Sound001")
+    /spatdif/scene/add-media                  (msg: "Media001")
+    /spatdif/media/Media001/location          (msg: "C:/sounds/birds.wav")
+    /spatdif/source/Sound001/associate-media  (msg: "Media001")
+    /spatdif/source/Sound001/position         (msg: 3.141, 1.575, 0.654)
+    /spatdif/info/host                        (msg: "3D-HASE")
+    /spatdif/info/client-status               (msg: "true")
+    /spatdif/info/author                      (msg: "Steffen")
 
 
 ...to be continued...

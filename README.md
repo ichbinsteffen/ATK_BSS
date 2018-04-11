@@ -7,7 +7,7 @@ use ATK with the SpatDIF format for OSC messages.
 This lets a sound spatialization environment that sends SpatDIF compliant OSC messages
 make use of the rendering engine of ATK. 
 
-![alt text](https://github.com/ichbinsteffen/blob/master/misc/images/window.PNG "A screenshot of the ATK_BSS window.")
+![alt text](https://github.com/ichbinsteffen/tree/master/misc/images/window.PNG "A screenshot of the ATK_BSS window.")
 
 For further information about ATK, visit:
 https://github.com/ambisonictoolkit/atk-sc3

@@ -20,13 +20,13 @@ SpatDIFs specifications. In ATK BSS however only OSC data will be received.
 At the current state of ATK BSS, IDs are considered to be numeric and will be interpreted as such in the OSC path.
 Following statements:
 
-  /spatdif/source/<id>/position
-  /spatdif/media/<id>/location
+    /spatdif/source/<id>/position
+    /spatdif/media/<id>/location
 
 would only work in this manner:
 
-  /spatdif/source/0/position 
-  /spatdif/source/13/location
+    /spatdif/source/0/position 
+    /spatdif/source/13/location
   
 The housekeeping of the appropriate association between source objects and media is thereby easier and more efficient to achieve.
 

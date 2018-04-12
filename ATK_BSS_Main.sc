@@ -147,10 +147,10 @@ ATK_BSS_Main {
 		QView(window,Rect(200,4,1,92)).background_(Color.gray);
 
 		QStaticText(window, Rect(10,10,150,20)).string_("Client name: ");
-		clientNameLabel = QStaticText(window, Rect(80,10,150,20)).string_("N/A");
+		clientNameLabel = QStaticText(window, Rect(100,10,150,20)).string_("N/A");
 
 		QStaticText(window, Rect(10,40,150,20)).string_("Client status: ");
-		clientStatusLabel = QStaticText(window, Rect(80,40,150,20)).string_("Offline").stringColor_(Color.grey);
+		clientStatusLabel = QStaticText(window, Rect(100,40,150,20)).string_("Offline").stringColor_(Color.grey);
 
 		QStaticText(window, Rect(10,70,150,20)).string_("Number of Sources: ");
 		sourceCountLabel = QStaticText(window, Rect(140,70,150,20)).string_(sourceDictionary.size.asString);

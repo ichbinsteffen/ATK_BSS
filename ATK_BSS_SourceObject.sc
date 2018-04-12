@@ -29,15 +29,16 @@ ATK_BSS_SourceObject {
 // =================================================================================
 
 	*new
-	{
+	{ |withID|
 		currentID = currentID + 1;
-		^super.new.init()
+		^super.new.init(withID)
 	}
 
 // =================================================================================
 
 	init
-	{
+	{ |withID|
+		this.id = withID;
 		this.atkEncoder = FoaEncoderMatrix.newOmni;
 		this.sndBuffer = Buffer.new();
 		this.currentStartFrame = 0;
@@ -138,7 +139,7 @@ ATK_BSS_SourceObject {
 		var startFrame = startSec * 44100;
 		this.numFrames = this.sndBuffer.numFrames;
 		("Soundfile has: " + this.sndBuffer.numFrames + "Frames").postln;
-		("Playing From frame: "+ startFrame).postln;
+		"Playing Source-Object: % from sec: %; Frame: % \n".postf(this.id, startSec, startFrame);
 		this.synth.set(\currentStartFrame, startFrame);
 		this.synth.set(\loop, loop);
 		this.synth.set(\sndBuffer, this.sndBuffer);

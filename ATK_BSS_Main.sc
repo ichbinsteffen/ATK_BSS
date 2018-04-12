@@ -449,6 +449,7 @@ ATK_BSS_Main {
 					{
 						if(a[2] == 'position-unit') // Descriptor: position-unit
 						{
+
 							var sym = msg[1];
 							if( ((sym == 'xyz') || (sym == 'aed') || (sym == 'openGL')),{
 								this.positionUnit = msg[1];

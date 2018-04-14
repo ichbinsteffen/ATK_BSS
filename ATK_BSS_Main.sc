@@ -360,11 +360,31 @@ ATK_BSS_Main {
 								var adressed_m = this.mediaDictionary[a[2]];
 
 								case
-								{a[3] == 'type'}        {adressed_m.type = msg[1];}
-								{a[3] == 'location'}    {adressed_m.location = msg[1];}
-								{a[3] == 'channel'}     {adressed_m.channel = msg[1];}
-								{a[3] == 'time-offset'} {adressed_m.timeOffset = msg[1];}
-								{a[3] == 'gain'}        {adressed_m.gain = msg[1];};
+								{a[3] == 'type'}
+								{
+									adressed_m.type = msg[1];
+									"% [%] \n".postf(msg[0], msg[1]);
+								}
+								{a[3] == 'location'}
+								{
+									adressed_m.location = msg[1];
+									"% [%] \n".postf(msg[0], msg[1]);
+								}
+								{a[3] == 'channel'}
+								{
+									adressed_m.channel = msg[1];
+									"% [%] \n".postf(msg[0], msg[1]);
+								}
+								{a[3] == 'time-offset'}
+								{
+									adressed_m.timeOffset = msg[1];
+									"% [%] \n".postf(msg[0], msg[1]);
+								}
+								{a[3] == 'gain'}
+								{
+									adressed_m.gain = msg[1];
+									"% [%] \n".postf(msg[0], msg[1]);
+								};
 							}
 						);
 					};
@@ -400,15 +420,24 @@ ATK_BSS_Main {
 					if(a[1] == 'info') // Entity: info
 					{
 						case
-						{a[2] == 'author'} {"[Info] Author: %\n".postf(msg[1]);}
+						{a[2] == 'author'}
+						{
+							"[Info] Author: %\n".postf(msg[1]);
+							"% [%] \n".postf(msg[0], msg[1]);
+						}
 						{a[2] == 'host'}
 						{
 							{
 								this.clientNameLabel.string_(msg[1]);
 								this.update_GUI();
+								"% [%] \n".postf(msg[0], msg[1]);
 							}.defer;
 						}
-						{a[2] == 'host-status'} {"[Info] Host: % - Status: %\n".postf(msg[1], msg[2]);}
+						{a[2] == 'host-status'}
+						{
+							"[Info] Host: % - Status: %\n".postf(msg[1], msg[2]);
+							"% [%] \n".postf(msg[0], msg[1]);
+						}
 						{a[2] == 'client-status'}
 						{
 							if (msg[1].asSymbol == 'true', {
@@ -418,7 +447,7 @@ ATK_BSS_Main {
 							if (msg[1].asSymbol == 'false', {
 								{this.clientStatusLabel.string_("OFFLINE").stringColor_(Color.red);}.defer;
 							});
-
+							"% [%] \n".postf(msg[0], msg[1]);
 						};
 					};
 

@@ -292,56 +292,57 @@ ATK_BSS_Main {
 
 								{a[3] == 'associate-media'}
 								{
+									"% [%] \n".postf(msg[0], msg[1]);
+
 									if (mediaDictionary[msg[1]] == nil,
 										{
 											"[ERROR] Media ID: % - Not found. Association aborted.\n".postf(msg[1]);
 										},
 										{
 											addressed_so.set_media(mediaDictionary[msg[1]]);
-											"% [%] \n".postf(msg[0], msg[1]);
 										}
 									);
 								}
 
 								{a[3] == 'position'}
 								{
+									"% [% % %] \n".postf(msg[0], msg[1],msg[2],msg[3]);
+
 									if (this.positionUnit == 'xyz')
 									{
 										addressed_so.set_PositionCartesian(msg[1],msg[2],msg[3]);
-										"% [% % %] \n".postf(msg[0], msg[1],msg[2],msg[3]);
 									};
 
 									if (this.positionUnit == 'aed')
 									{
 										addressed_so.set_PositionSpherical(msg[1],msg[2],msg[3]);
-										"% [% % %] \n".postf(msg[0], msg[1],msg[2],msg[3]);
 									};
 								}
 
 								{a[3] == 'present'}
 								{
-									addressed_so.present = msg[1];
 									"% [%] \n".postf(msg[0], msg[1]);
+									addressed_so.present = msg[1];
 								}
 								{a[3] == 'volume'}
 								{
-									addressed_so.volume = msg[1];
 									"% [%] \n".postf(msg[0], msg[1]);
+									addressed_so.volume = msg[1];
 								}
 								{a[3] == 'play'}
 								{
-									addressed_so.play_Source(msg[1], msg[2]);
 									"% [%] \n".postf(msg[0], msg[1]);
+									addressed_so.play_Source(msg[1], msg[2]);
 								}
 								{a[3] == 'loop'}
 								{
-									addressed_so.loop = msg[1];
 									"% [%] \n".postf(msg[0], msg[1]);
+									addressed_so.loop = msg[1];
 								}
 								{a[3] == 'media'}
 								{
-									addressed_so.set_SoundfilePath(msg[1]);
 									"% [%] \n".postf(msg[0], msg[1]);
+									addressed_so.set_SoundfilePath(msg[1]);
 								};
 							}
 						);
@@ -352,6 +353,8 @@ ATK_BSS_Main {
 
 					if(a[1] == 'media') // Entity: Media
 					{
+						"% [%] \n".postf(msg[0], msg[1]);
+
 						if(this.mediaDictionary[a[2]] == nil,
 							{
 								"[ERROR] Media Object % not found. \n".postf(a[2]);
@@ -363,27 +366,22 @@ ATK_BSS_Main {
 								{a[3] == 'type'}
 								{
 									adressed_m.type = msg[1];
-									"% [%] \n".postf(msg[0], msg[1]);
 								}
 								{a[3] == 'location'}
 								{
 									adressed_m.location = msg[1];
-									"% [%] \n".postf(msg[0], msg[1]);
 								}
 								{a[3] == 'channel'}
 								{
 									adressed_m.channel = msg[1];
-									"% [%] \n".postf(msg[0], msg[1]);
 								}
 								{a[3] == 'time-offset'}
 								{
 									adressed_m.timeOffset = msg[1];
-									"% [%] \n".postf(msg[0], msg[1]);
 								}
 								{a[3] == 'gain'}
 								{
 									adressed_m.gain = msg[1];
-									"% [%] \n".postf(msg[0], msg[1]);
 								};
 							}
 						);
@@ -393,6 +391,7 @@ ATK_BSS_Main {
 
 					if(a[1] == 'loop') // Entity: Loop
 					{
+						"% [%] \n".postf(msg[0], msg[1]);
 
 						"[WARNING] Loop handling not defied yet.\n".postln;
 
@@ -419,25 +418,21 @@ ATK_BSS_Main {
 
 					if(a[1] == 'info') // Entity: info
 					{
+						"% [%] \n".postf(msg[0], msg[1]);
+
 						case
 						{a[2] == 'author'}
-						{
-							"[Info] Author: %\n".postf(msg[1]);
-							"% [%] \n".postf(msg[0], msg[1]);
-						}
+						{"[Info] Author: %\n".postf(msg[1]);}
 						{a[2] == 'host'}
-						{
-							{
+						{{
 								this.clientNameLabel.string_(msg[1]);
 								this.update_GUI();
-								"% [%] \n".postf(msg[0], msg[1]);
 							}.defer;
 						}
+
 						{a[2] == 'host-status'}
-						{
-							"[Info] Host: % - Status: %\n".postf(msg[1], msg[2]);
-							"% [%] \n".postf(msg[0], msg[1]);
-						}
+						{"[Info] Host: % - Status: %\n".postf(msg[1], msg[2]);}
+
 						{a[2] == 'client-status'}
 						{
 							if (msg[1].asSymbol == 'true', {
@@ -447,7 +442,6 @@ ATK_BSS_Main {
 							if (msg[1].asSymbol == 'false', {
 								{this.clientStatusLabel.string_("OFFLINE").stringColor_(Color.red);}.defer;
 							});
-							"% [%] \n".postf(msg[0], msg[1]);
 						};
 					};
 
@@ -455,11 +449,12 @@ ATK_BSS_Main {
 
 					if(a[1] == 'scene') // Entity: scene
 					{
+						"% [%] \n".postf(msg[0], msg[1]);
+
 						if(a[2] == 'add-source') // Descriptor: add-source
 						{
 							{
 								this.add_SourceToDictionary(msg[1]);
-								"% [%] \n".postf(msg[0], msg[1]);
 								// this.add_SourceToList(); // Deprecated
 							}.defer;
 						};
@@ -467,7 +462,6 @@ ATK_BSS_Main {
 						if(a[2] == 'add-media')
 						{
 							this.add_MediaToDictionary(msg[1]);
-							"% [%] \n".postf(msg[0], msg[1]);
 						};
 
 					};
@@ -478,11 +472,13 @@ ATK_BSS_Main {
 					{
 						if(a[2] == 'position-unit') // Descriptor: position-unit
 						{
-
 							var sym = msg[1];
+
+							"% [%] \n".postf(msg[0], msg[1]);
+
 							if( ((sym == 'xyz') || (sym == 'aed') || (sym == 'openGL')),{
 								this.positionUnit = msg[1];
-								"% [%] \n".postf(msg[0], msg[1]);
+
 								if (msg[1]=='openGL', {"[WARNING] Unit openGL not supported yet!\n".postln;});
 							},
 							{
